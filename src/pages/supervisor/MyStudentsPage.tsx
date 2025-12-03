@@ -79,7 +79,8 @@ const mockStudents: Student[] = [
 ];
 
 export function MyStudentsPage() {
-  const [filter, setFilter] = useState<'all' | 'on-track' | 'at-risk' | 'delayed'>('all');
+  const [selectedSemester, setSelectedSemester] = useState('All Semesters');
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
 
   const getStatusColor = (status: Student['status']) => {
     switch (status) {
@@ -107,9 +108,19 @@ export function MyStudentsPage() {
     }
   };
 
-  const filteredStudents = filter === 'all' 
-    ? mockStudents 
-    : mockStudents.filter(s => s.status === filter);
+  const filteredStudents = (() => {
+    let filtered = mockStudents;
+    
+    if (selectedStatus === 'On Track') {
+      filtered = filtered.filter(s => s.status === 'on-track');
+    } else if (selectedStatus === 'At Risk') {
+      filtered = filtered.filter(s => s.status === 'at-risk');
+    } else if (selectedStatus === 'Delayed') {
+      filtered = filtered.filter(s => s.status === 'delayed');
+    }
+    
+    return filtered;
+  })();
 
   return (
     <div className="space-y-6">
@@ -119,148 +130,155 @@ export function MyStudentsPage() {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900">{mockStudents.length}</p>
-            </div>
-            <User className="h-8 w-8 text-gray-400" />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <p className="text-sm text-gray-600">Total Students</p>
+          <p className="text-2xl font-bold text-gray-900">{mockStudents.length}</p>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">On Track</p>
-              <p className="text-2xl font-bold text-green-600">
-                {mockStudents.filter(s => s.status === 'on-track').length}
-              </p>
-            </div>
-            <CheckCircle className="h-8 w-8 text-green-400" />
-          </div>
+        <Card className="p-4">
+          <p className="text-sm text-gray-600">On Track</p>
+          <p className="text-2xl font-bold text-green-600">
+            {mockStudents.filter(s => s.status === 'on-track').length}
+          </p>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">At Risk</p>
-              <p className="text-2xl font-bold text-yellow-600">
-                {mockStudents.filter(s => s.status === 'at-risk').length}
-              </p>
-            </div>
-            <Clock className="h-8 w-8 text-yellow-400" />
-          </div>
+        <Card className="p-4">
+          <p className="text-sm text-gray-600">At Risk</p>
+          <p className="text-2xl font-bold text-yellow-600">
+            {mockStudents.filter(s => s.status === 'at-risk').length}
+          </p>
         </Card>
 
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600">Delayed</p>
-              <p className="text-2xl font-bold text-red-600">
-                {mockStudents.filter(s => s.status === 'delayed').length}
-              </p>
-            </div>
-            <AlertCircle className="h-8 w-8 text-red-400" />
-          </div>
+        <Card className="p-4">
+          <p className="text-sm text-gray-600">Delayed</p>
+          <p className="text-2xl font-bold text-red-600">
+            {mockStudents.filter(s => s.status === 'delayed').length}
+          </p>
         </Card>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-gray-200">
-        {['all', 'on-track', 'at-risk', 'delayed'].map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilter(status as typeof filter)}
-            className={`px-4 py-2 font-medium transition-colors capitalize ${
-              filter === status
-                ? 'text-[#FF8C00] border-b-2 border-[#FF8C00]'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            {status.replace('-', ' ')} ({status === 'all' ? mockStudents.length : mockStudents.filter(s => s.status === status).length})
-          </button>
-        ))}
+      {/* Filters */}
+      <div className="bg-gray-100 p-4 rounded-lg">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">MY STUDENTS</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 font-medium whitespace-nowrap">Semester:</label>
+            <select 
+              value={selectedSemester}
+              onChange={(e) => setSelectedSemester(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+            >
+              <option>All Semesters</option>
+              <option>7th Semester</option>
+              <option>8th Semester</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="text-gray-700 font-medium whitespace-nowrap">Status:</label>
+            <select 
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+            >
+              <option>All Status</option>
+              <option>On Track</option>
+              <option>At Risk</option>
+              <option>Delayed</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      {/* Students List */}
-      <div className="grid grid-cols-1 gap-6">
-        {filteredStudents.map((student) => (
-          <Card key={student.id} className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-[#FF8C00] rounded-full flex items-center justify-center text-white text-xl font-bold">
-                  {student.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{student.name}</h3>
-                  <p className="text-sm text-gray-600">{student.rollNumber}</p>
-                  <Badge className={`${getStatusColor(student.status)} text-white mt-2`}>
-                    <span className="flex items-center gap-1">
-                      {getStatusIcon(student.status)}
-                      {student.status.replace('-', ' ')}
-                    </span>
-                  </Badge>
-                </div>
-              </div>
-              <Button className="bg-[#FF8C00] hover:bg-[#cc7000] text-white">
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <h4 className="text-sm font-semibold text-gray-700 mb-1">Project Title</h4>
-              <p className="text-gray-600">{student.projectTitle}</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Mail className="h-4 w-4 text-[#FF8C00]" />
-                <a href={`mailto:${student.email}`} className="hover:text-[#FF8C00] truncate">
-                  {student.email}
-                </a>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Phone className="h-4 w-4 text-[#FF8C00]" />
-                {student.phone}
-              </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Calendar className="h-4 w-4 text-[#FF8C00]" />
-                Last: {new Date(student.lastSubmission).toLocaleDateString()}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Overall Progress</span>
-                <span className="text-sm font-semibold text-[#FF8C00]">{student.progress}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-[#FF8C00] h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${student.progress}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Monthly Logs</span>
-                <Badge className={student.monthlyLogsSubmitted === student.totalMonthlyLogs ? 'bg-green-500' : 'bg-yellow-500'}>
-                  {student.monthlyLogsSubmitted}/{student.totalMonthlyLogs}
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Next Deadline</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {new Date(student.nextDeadline).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          </Card>
-        ))}
+      {/* Students Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b-2 border-gray-200">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Student Info</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Project Title</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Contact</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Progress</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly Logs</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Action</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredStudents.map((student) => (
+                <tr key={student.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-[#FF8C00] rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0">
+                        {student.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{student.name}</p>
+                        <p className="text-xs text-gray-600">{student.rollNumber}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <p className="text-sm text-gray-900">{student.projectTitle}</p>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                        <Mail className="h-3 w-3 text-[#FF8C00]" />
+                        <a href={`mailto:${student.email}`} className="hover:text-[#FF8C00] truncate">
+                          {student.email.split('@')[0]}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-600">
+                        <Phone className="h-3 w-3 text-[#FF8C00]" />
+                        {student.phone}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4">
+                    <div className="w-full">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-gray-700">Progress</span>
+                        <span className="text-xs font-semibold text-[#FF8C00]">{student.progress}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-[#FF8C00] h-2 rounded-full transition-all"
+                          style={{ width: `${student.progress}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
+                        <Calendar className="h-3 w-3" />
+                        Last: {new Date(student.lastSubmission).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <Badge className={student.monthlyLogsSubmitted === student.totalMonthlyLogs ? 'bg-green-500 text-white border-green-500' : 'bg-yellow-500 text-white border-yellow-500'}>
+                      {student.monthlyLogsSubmitted}/{student.totalMonthlyLogs}
+                    </Badge>
+                    <p className="text-xs text-gray-600 mt-1">Submitted</p>
+                  </td>
+                  <td className="px-4 py-4">
+                    <Badge className={`${getStatusColor(student.status)} text-white`}>
+                      <span className="flex items-center gap-1">
+                        {getStatusIcon(student.status)}
+                        {student.status.replace('-', ' ')}
+                      </span>
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-4">
+                    <Button size="sm" className="bg-[#FF8C00] hover:bg-[#cc7000] text-white">
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

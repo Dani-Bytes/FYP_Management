@@ -20,7 +20,8 @@ import {
   ClipboardList,
   Award,
   BarChart3,
-  Shield
+  Shield,
+  CreditCard
 } from 'lucide-react';
 
 interface SidebarLayoutProps {
@@ -72,9 +73,9 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
         return [
           { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/supervisor/dashboard' },
           { label: 'My Students', icon: <Users size={18} />, path: '/supervisor/my-students' },
-          { label: 'Pending Reviews', icon: <CheckCircle size={18} />, path: '/supervisor/pending-reviews' },
-          { label: 'Monthly Logs', icon: <ClipboardList size={18} />, path: '/supervisor/monthly-logs' },
+          { label: 'Reviews & Approvals', icon: <CheckCircle size={18} />, path: '/supervisor/reviews' },
           { label: 'Escalations', icon: <Shield size={18} />, path: '/supervisor/escalations' },
+          { label: 'Payment Information', icon: <CreditCard size={18} />, path: '/supervisor/payment-info' },
           { label: 'Guidelines', icon: <HelpCircle size={18} />, path: '/supervisor/guidelines' },
         ];
       

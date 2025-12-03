@@ -11,9 +11,9 @@ import { SubmissionsPage as StudentSubmissionsPage } from './pages/student/Submi
 // Supervisor Pages
 import { SupervisorDashboardPage } from './pages/supervisor/SupervisorDashboardPage';
 import { MyStudentsPage } from './pages/supervisor/MyStudentsPage';
-import { PendingReviewsPage } from './pages/supervisor/PendingReviewsPage';
-import { MonthlyLogsPage as SupervisorMonthlyLogsPage } from './pages/supervisor/MonthlyLogsPage';
+import { ReviewsPage as SupervisorReviewsPage } from './pages/supervisor/ReviewsPage';
 import { EscalationsPage as SupervisorEscalationsPage } from './pages/supervisor/EscalationsPage';
+import { PaymentInfoPage } from './pages/supervisor/PaymentInfoPage';
 
 // Coordinator Pages
 import { CoordinatorDashboardPage } from './pages/coordinator/CoordinatorDashboardPage';
@@ -105,19 +105,22 @@ function App() {
               <SidebarLayout><MyStudentsPage /></SidebarLayout>
             </ProtectedRoute>
           } />
-          <Route path="/supervisor/pending-reviews" element={
+          <Route path="/supervisor/reviews" element={
             <ProtectedRoute allowedRoles={['supervisor']}>
-              <SidebarLayout><PendingReviewsPage /></SidebarLayout>
+              <SidebarLayout><SupervisorReviewsPage /></SidebarLayout>
             </ProtectedRoute>
           } />
-          <Route path="/supervisor/monthly-logs" element={
-            <ProtectedRoute allowedRoles={['supervisor']}>
-              <SidebarLayout><SupervisorMonthlyLogsPage /></SidebarLayout>
-            </ProtectedRoute>
-          } />
+          {/* Redirects for legacy routes */}
+          <Route path="/supervisor/pending-reviews" element={<Navigate to="/supervisor/reviews" replace />} />
+          <Route path="/supervisor/monthly-logs" element={<Navigate to="/supervisor/reviews" replace />} />
           <Route path="/supervisor/escalations" element={
             <ProtectedRoute allowedRoles={['supervisor']}>
               <SidebarLayout><SupervisorEscalationsPage /></SidebarLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/supervisor/payment-info" element={
+            <ProtectedRoute allowedRoles={['supervisor']}>
+              <SidebarLayout><PaymentInfoPage /></SidebarLayout>
             </ProtectedRoute>
           } />
           <Route path="/supervisor/guidelines" element={

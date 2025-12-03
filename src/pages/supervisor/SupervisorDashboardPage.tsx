@@ -87,7 +87,7 @@ export function SupervisorDashboardPage() {
           </Card>
         </Link>
 
-        <Link to="/supervisor/pending-reviews">
+        <Link to="/supervisor/reviews">
           <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
             <div className="flex items-center justify-between">
               <div>
@@ -125,7 +125,7 @@ export function SupervisorDashboardPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Recent Submissions</h3>
-            <Link to="/supervisor/pending-reviews" className="text-sm text-[#FF8C00] hover:text-[#cc7000]">
+            <Link to="/supervisor/reviews" className="text-sm text-[#FF8C00] hover:text-[#cc7000]">
               View All
             </Link>
           </div>
