@@ -107,6 +107,7 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
           { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/evaluator/dashboard' },
           { label: isExternal ? 'Final Defenses' : 'Defense Schedule', icon: <Calendar size={18} />, path: '/evaluator/defense-schedule' },
           { label: 'Evaluations', icon: <CheckCircle size={18} />, path: '/evaluator/evaluations' },
+          { label: 'Payment Information', icon: <CreditCard size={18} />, path: '/evaluator/payment-info' },
           { label: 'Guidelines', icon: <HelpCircle size={18} />, path: '/evaluator/guidelines' },
         ];
       

@@ -32,6 +32,7 @@ import { AnalyticsPage } from './pages/hod/AnalyticsPage';
 // Evaluator Pages
 import { EvaluatorDashboardPage } from './pages/evaluator/EvaluatorDashboardPage';
 import { EvaluationsPage } from './pages/evaluator/EvaluationsPage';
+import { PaymentInfoPage as EvaluatorPaymentInfoPage } from './pages/evaluator/PaymentInfoPage';
 
 // Shared Components
 import { GuidelinesPage } from './components/shared/GuidelinesPage';
@@ -218,6 +219,11 @@ function App() {
           <Route path="/evaluator/evaluations" element={
             <ProtectedRoute allowedRoles={['evaluator']}>
               <SidebarLayout><EvaluationsPage /></SidebarLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/evaluator/payment-info" element={
+            <ProtectedRoute allowedRoles={['evaluator']}>
+              <SidebarLayout><EvaluatorPaymentInfoPage /></SidebarLayout>
             </ProtectedRoute>
           } />
           <Route path="/evaluator/guidelines" element={
