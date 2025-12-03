@@ -46,6 +46,8 @@ export function PenaltiesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPenalty, setSelectedPenalty] = useState<Penalty | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const getPenaltyTypeColor = (type: Penalty['penaltyType']) => {
     switch (type) {
@@ -74,6 +76,12 @@ export function PenaltiesPage() {
         return 'bg-gray-500 text-white';
     }
   };
+
+  const filteredPenalties = mockPenalties.filter(penalty => {
+    const matchesType = filterType === 'all' || penalty.penaltyType === filterType;
+    const matchesStatus = filterStatus === 'all' || penalty.status === filterStatus;
+    return matchesType && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -140,52 +148,131 @@ export function PenaltiesPage() {
         </Card>
       </div>
 
-      {/* Penalties List */}
-      <div className="space-y-4">
-        {mockPenalties.map((penalty) => (
-          <Card key={penalty.id} className="p-6 border-l-4 border-red-500">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{penalty.studentName}</h3>
-                  <Badge className={getStatusColor(penalty.status)}>
-                    {penalty.status}
-                  </Badge>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getPenaltyTypeColor(penalty.penaltyType)}`}>
-                    {penalty.penaltyType}
-                  </span>
-                  <span className="text-sm font-bold text-red-600">
-                    -{penalty.marksDeducted} marks
-                  </span>
-                </div>
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="flex gap-4">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Types</option>
+            <option value="late-submission">Late Submission</option>
+            <option value="plagiarism">Plagiarism</option>
+            <option value="attendance">Attendance</option>
+            <option value="misconduct">Misconduct</option>
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="applied">Applied</option>
+            <option value="appealed">Appealed</option>
+          </select>
+        </div>
+      </Card>
 
-                <p className="text-sm text-gray-600 mb-3">
-                  {penalty.rollNumber} • Supervisor: {penalty.supervisor}
-                </p>
-
-                <p className="text-gray-700 mb-3">{penalty.description}</p>
-
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
+      {/* Penalties Table */}
+      <Card className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                No.
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Student
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Supervisor
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Penalty Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Description
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Marks Deducted
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredPenalties.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
+                  No penalties found matching the selected filters
+                </td>
+              </tr>
+            ) : (
+              filteredPenalties.map((penalty, index) => (
+                <tr key={penalty.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{penalty.studentName}</div>
+                    <div className="text-sm text-gray-500">{penalty.rollNumber}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {penalty.supervisor}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getPenaltyTypeColor(penalty.penaltyType)}`}>
+                      {penalty.penaltyType}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="text-sm text-gray-900 truncate" title={penalty.description}>
+                      {penalty.description}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm font-bold text-red-600">
+                      -{penalty.marksDeducted}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(penalty.date).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Badge className={getStatusColor(penalty.status)}>
+                      {penalty.status}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <Button
+                      onClick={() => {
+                        setSelectedPenalty(penalty);
+                        setShowViewModal(true);
+                      }}
+                      variant="outline"
+                      className="border-[#FF8C00] text-[#FF8C00]"
+                    >
+                      View
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </Card>
 
-              <Button
-                onClick={() => {
-                  setSelectedPenalty(penalty);
-                  setShowViewModal(true);
-                }}
-                variant="outline"
-                className="border-[#FF8C00] text-[#FF8C00] ml-4"
-              >
-                View Details
-              </Button>
-            </div>
-          </Card>
-        ))}
+      <div className="text-sm text-gray-600">
+        Showing {filteredPenalties.length} of {mockPenalties.length} penalties
       </div>
 
       {/* Add Penalty Modal */}

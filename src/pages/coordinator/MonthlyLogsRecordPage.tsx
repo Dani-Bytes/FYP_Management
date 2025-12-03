@@ -81,6 +81,7 @@ const mockLogRecords: MonthlyLogRecord[] = [
 export function MonthlyLogsRecordPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMonth, setFilterMonth] = useState<string>('all');
+  const [filterSemester, setFilterSemester] = useState<string>('all');
 
   const filteredLogs = mockLogRecords.filter(log => {
     const matchesSearch = 
@@ -141,7 +142,7 @@ export function MonthlyLogsRecordPage() {
 
       {/* Search and Filter */}
       <Card className="p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -151,6 +152,17 @@ export function MonthlyLogsRecordPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
             />
+          </div>
+          <div>
+            <select
+              value={filterSemester}
+              onChange={(e) => setFilterSemester(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+            >
+              <option value="all">All Semesters</option>
+              <option value="7th">7th Semester</option>
+              <option value="8th">8th Semester</option>
+            </select>
           </div>
           <div>
             <select
