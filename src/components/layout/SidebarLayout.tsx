@@ -96,8 +96,7 @@ export const SidebarLayout: React.FC<SidebarLayoutProps> = ({ children }) => {
           { label: 'Dashboard', icon: <LayoutDashboard size={18} />, path: '/hod/dashboard' },
           { label: 'Appeals', icon: <FileText size={18} />, path: '/hod/appeals' },
           { label: 'Escalations', icon: <Shield size={18} />, path: '/hod/escalations' },
-          { label: 'Result Approval', icon: <CheckCircle size={18} />, path: '/hod/result-approval' },
-          { label: 'Publish Results', icon: <Upload size={18} />, path: '/hod/publish-results' },
+          { label: 'Results Management', icon: <CheckCircle size={18} />, path: '/hod/result-approval' },
           { label: 'Analytics', icon: <BarChart3 size={18} />, path: '/hod/analytics' },
           { label: 'Guidelines', icon: <HelpCircle size={18} />, path: '/hod/guidelines' },
         ];

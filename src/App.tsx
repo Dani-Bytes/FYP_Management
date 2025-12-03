@@ -27,7 +27,6 @@ import { HODDashboardPage } from './pages/hod/HODDashboardPage';
 import { AppealsPage } from './pages/hod/AppealsPage';
 import { EscalationsPage as HODEscalationsPage } from './pages/hod/EscalationsPage';
 import { ResultApprovalPage } from './pages/hod/ResultApprovalPage';
-import { PublishResultsPage } from './pages/hod/PublishResultsPage';
 import { AnalyticsPage } from './pages/hod/AnalyticsPage';
 
 // Evaluator Pages
@@ -192,11 +191,8 @@ function App() {
               <SidebarLayout><ResultApprovalPage /></SidebarLayout>
             </ProtectedRoute>
           } />
-          <Route path="/hod/publish-results" element={
-            <ProtectedRoute allowedRoles={['hod']}>
-              <SidebarLayout><PublishResultsPage /></SidebarLayout>
-            </ProtectedRoute>
-          } />
+          {/* Redirect for legacy route */}
+          <Route path="/hod/publish-results" element={<Navigate to="/hod/result-approval" replace />} />
           <Route path="/hod/analytics" element={
             <ProtectedRoute allowedRoles={['hod']}>
               <SidebarLayout><AnalyticsPage /></SidebarLayout>

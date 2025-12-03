@@ -45,6 +45,8 @@ const mockAppeals: Appeal[] = [
 export function AppealsPage() {
   const [selectedAppeal, setSelectedAppeal] = useState<Appeal | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const getAppealTypeColor = (type: Appeal['appealType']) => {
     switch (type) {
@@ -73,6 +75,12 @@ export function AppealsPage() {
         return 'bg-gray-500 text-white';
     }
   };
+
+  const filteredAppeals = mockAppeals.filter(appeal => {
+    const matchesType = filterType === 'all' || appeal.appealType === filterType;
+    const matchesStatus = filterStatus === 'all' || appeal.status === filterStatus;
+    return matchesType && matchesStatus;
+  });
 
   return (
     <div className="space-y-6">
@@ -120,64 +128,137 @@ export function AppealsPage() {
         </Card>
       </div>
 
-      {/* Appeals List */}
-      <div className="space-y-4">
-        {mockAppeals.map((appeal) => (
-          <Card key={appeal.id} className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{appeal.subject}</h3>
-                  <Badge className={getStatusColor(appeal.status)}>
-                    {appeal.status}
-                  </Badge>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full ${getAppealTypeColor(appeal.appealType)}`}>
-                    {appeal.appealType}
-                  </span>
-                </div>
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="flex gap-4">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Types</option>
+            <option value="grade">Grade</option>
+            <option value="penalty">Penalty</option>
+            <option value="deadline">Deadline</option>
+            <option value="other">Other</option>
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </Card>
 
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                  <span className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    {appeal.studentName} ({appeal.rollNumber})
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
+      {/* Appeals Table */}
+      <Card className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                No.
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Student
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Subject
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Appeal Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Coordinator
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Submitted Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredAppeals.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                  No appeals found matching the selected filters
+                </td>
+              </tr>
+            ) : (
+              filteredAppeals.map((appeal, index) => (
+                <tr key={appeal.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{appeal.studentName}</div>
+                    <div className="text-sm text-gray-500">{appeal.rollNumber}</div>
+                  </td>
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="text-sm text-gray-900 truncate" title={appeal.subject}>
+                      {appeal.subject}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${getAppealTypeColor(appeal.appealType)}`}>
+                      {appeal.appealType}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {appeal.coordinator}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(appeal.submittedDate).toLocaleDateString()}
-                  </span>
-                  <span>Coordinator: {appeal.coordinator}</span>
-                </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Badge className={getStatusColor(appeal.status)}>
+                      {appeal.status}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex gap-2">
+                      {appeal.status === 'pending' && (
+                        <>
+                          <Button className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Approve
+                          </Button>
+                          <Button className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1">
+                            <XCircle className="h-3 w-3 mr-1" />
+                            Reject
+                          </Button>
+                        </>
+                      )}
+                      <Button
+                        onClick={() => {
+                          setSelectedAppeal(appeal);
+                          setShowViewModal(true);
+                        }}
+                        variant="outline"
+                        className="border-[#FF8C00] text-[#FF8C00] text-xs px-2 py-1"
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </Card>
 
-                <p className="text-gray-600">{appeal.description}</p>
-              </div>
-
-              <div className="flex gap-2 ml-4">
-                {appeal.status === 'pending' && (
-                  <>
-                    <Button className="bg-green-500 hover:bg-green-600 text-white">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Approve
-                    </Button>
-                    <Button className="bg-red-500 hover:bg-red-600 text-white">
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Reject
-                    </Button>
-                  </>
-                )}
-                <Button
-                  onClick={() => {
-                    setSelectedAppeal(appeal);
-                    setShowViewModal(true);
-                  }}
-                  variant="outline"
-                  className="border-[#FF8C00] text-[#FF8C00]"
-                >
-                  View Details
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
+      <div className="text-sm text-gray-600">
+        Showing {filteredAppeals.length} of {mockAppeals.length} appeals
       </div>
 
       {/* View Details Modal */}

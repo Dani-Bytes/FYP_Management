@@ -36,6 +36,9 @@ const mockEscalations: Escalation[] = [
 export function EscalationsPage() {
   const [selectedEscalation, setSelectedEscalation] = useState<Escalation | null>(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [filterType, setFilterType] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterSeverity, setFilterSeverity] = useState<string>('all');
 
   const getSeverityColor = (severity: Escalation['severity']) => {
     const colors = {
@@ -55,6 +58,13 @@ export function EscalationsPage() {
     };
     return colors[status];
   };
+
+  const filteredEscalations = mockEscalations.filter(escalation => {
+    const matchesType = filterType === 'all' || escalation.issueType === filterType;
+    const matchesStatus = filterStatus === 'all' || escalation.status === filterStatus;
+    const matchesSeverity = filterSeverity === 'all' || escalation.severity === filterSeverity;
+    return matchesType && matchesStatus && matchesSeverity;
+  });
 
   return (
     <div className="space-y-6">
@@ -102,60 +112,150 @@ export function EscalationsPage() {
         </Card>
       </div>
 
-      {/* Escalations List */}
-      <div className="space-y-4">
-        {mockEscalations.map((escalation) => (
-          <Card key={escalation.id} className="p-6 border-l-4 border-red-500">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{escalation.title}</h3>
-                  <Badge className={`${getSeverityColor(escalation.severity)} text-white`}>
-                    {escalation.severity}
-                  </Badge>
-                  <Badge className={`${getStatusColor(escalation.status)} text-white`}>
-                    {escalation.status}
-                  </Badge>
-                </div>
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="flex gap-4">
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Types</option>
+            <option value="academic">Academic</option>
+            <option value="behavioral">Behavioral</option>
+            <option value="attendance">Attendance</option>
+            <option value="technical">Technical</option>
+          </select>
+          <select
+            value={filterSeverity}
+            onChange={(e) => setFilterSeverity(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Severity</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF8C00]"
+          >
+            <option value="all">All Status</option>
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+      </Card>
 
-                <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                  <span className="flex items-center gap-1">
-                    <User className="h-4 w-4" />
-                    {escalation.studentName} ({escalation.rollNumber})
-                  </span>
-                  <span>Supervisor: {escalation.supervisor}</span>
-                  <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
+      {/* Escalations Table */}
+      <Card className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                No.
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Student
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Title
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Issue Type
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Severity
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Supervisor
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Escalated Date
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {filteredEscalations.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
+                  No escalations found matching the selected filters
+                </td>
+              </tr>
+            ) : (
+              filteredEscalations.map((escalation, index) => (
+                <tr key={escalation.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{escalation.studentName}</div>
+                    <div className="text-sm text-gray-500">{escalation.rollNumber}</div>
+                  </td>
+                  <td className="px-6 py-4 max-w-xs">
+                    <div className="text-sm text-gray-900 truncate" title={escalation.title}>
+                      {escalation.title}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Badge className="bg-blue-100 text-blue-700">
+                      {escalation.issueType}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Badge className={`${getSeverityColor(escalation.severity)} text-white`}>
+                      {escalation.severity}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {escalation.supervisor}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(escalation.escalatedDate).toLocaleDateString()}
-                  </span>
-                </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Badge className={`${getStatusColor(escalation.status)} text-white`}>
+                      {escalation.status}
+                    </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex gap-2">
+                      {escalation.status !== 'resolved' && (
+                        <Button className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Resolve
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() => {
+                          setSelectedEscalation(escalation);
+                          setShowViewModal(true);
+                        }}
+                        variant="outline"
+                        className="border-[#FF8C00] text-[#FF8C00] text-xs px-2 py-1"
+                      >
+                        View
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </Card>
 
-                <p className="text-gray-600">{escalation.description}</p>
-              </div>
-
-              <div className="flex gap-2 ml-4">
-                {escalation.status !== 'resolved' && (
-                  <>
-                    <Button className="bg-green-500 hover:bg-green-600 text-white">
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Resolve
-                    </Button>
-                  </>
-                )}
-                <Button
-                  onClick={() => {
-                    setSelectedEscalation(escalation);
-                    setShowViewModal(true);
-                  }}
-                  variant="outline"
-                  className="border-[#FF8C00] text-[#FF8C00]"
-                >
-                  View Details
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
+      <div className="text-sm text-gray-600">
+        Showing {filteredEscalations.length} of {mockEscalations.length} escalations
       </div>
 
       {/* View Details Modal */}
